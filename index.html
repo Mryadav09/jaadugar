@@ -6,40 +6,36 @@
     <style>
         :root { --gn-glow: #00ff2a; }
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
-        
-        /* Mobile Fit & Prevent Scroll */
-        html, body { width: 100vw; height: 100vh; overflow: hidden; font-family: 'Share Tech Mono', monospace; background: #000; }
+        body, html { width: 100%; height: 100%; overflow: hidden; font-family: 'Share Tech Mono', monospace; background-color: #000; }
         
         /* Background Iframe */
-        #bg-iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; z-index: 1; }
+        #bg-iframe { width: 100%; height: 100%; border: none; position: absolute; top: 0; left: 0; z-index: 1; display: none; }
 
         /* Login Screen */
-        #login-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #001105; z-index: 10000; display: flex; align-items: center; justify-content: center; }
-        .login-box { background: linear-gradient(135deg, #001105, #00330f); border: 2px solid #00ff2a; border-radius: 15px; padding: 25px; width: 260px; text-align: center; box-shadow: 0 0 20px rgba(0,255,42,0.4); }
-        .login-box h2 { color: #fff; font-family: 'Montserrat', sans-serif; font-size: 16px; margin-bottom: 20px; text-shadow: 0 0 10px #00ff2a; letter-spacing: 2px; }
-        .login-box input { width: 100%; padding: 10px; background: #000; border: 1px solid #00ff2a; color: #00ff2a; font-family: 'Orbitron', sans-serif; text-align: center; border-radius: 8px; outline: none; margin-bottom: 15px; letter-spacing: 2px; }
-        .login-box input:focus { box-shadow: inset 0 0 10px rgba(0,255,42,0.5); }
-        .error-msg { color: #ff3333; font-family: 'Orbitron', sans-serif; font-size: 10px; display: none; margin-top: 10px; font-weight: bold; text-shadow: 0 0 5px red; }
+        #login-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #001105; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .log-title { font-family: 'Montserrat', sans-serif; color: #00ff2a; font-size: 24px; font-weight: 900; letter-spacing: 2px; text-shadow: 0 0 15px #00ff2a; margin-bottom: 25px; }
+        #pass-input { background: #000; border: 2px solid #00ff2a; border-radius: 12px; color: #fff; padding: 12px; font-size: 16px; text-align: center; outline: none; margin-bottom: 20px; font-family: 'Orbitron', sans-serif; box-shadow: inset 0 0 10px rgba(0,255,42,0.3); width: 220px; }
+        #pass-btn { background: linear-gradient(180deg, #00d020, #006010); border: 2px solid #00ff2a; color: #fff; padding: 12px 30px; font-family: 'Montserrat', sans-serif; font-weight: 900; border-radius: 12px; font-size: 14px; cursor: pointer; box-shadow: 0 0 15px rgba(0,255,42,0.5); }
+        #pass-btn:active { transform: scale(0.95); }
+        #err-msg { color: #ff3333; margin-top: 15px; font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 800; display: none; text-shadow: 0 0 10px #ff0000; }
 
-        /* Draggable Container */
-        #drag-container { position: absolute; top: 30%; left: 10%; z-index: 9999; touch-action: none; display: none; }
-
-        /* Original Tool Styles */
-        #main-wrapper { position: relative; display: flex; align-items: center; justify-content: center; overflow: visible; }
+        /* Animations */
         @keyframes flowGreen { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
         @keyframes toolGlow { 
            0% { box-shadow: 0 0 10px rgba(0,255,42,0.3), inset 0 0 20px rgba(0,255,42,0.3); border-color: #00ff2a; } 
            50% { box-shadow: 0 0 30px rgba(0,255,42,0.8), inset 0 0 40px rgba(0,255,42,0.8); border-color: #88ff88; } 
            100% { box-shadow: 0 0 10px rgba(0,255,42,0.3), inset 0 0 20px rgba(0,255,42,0.3); border-color: #00ff2a; } 
         }
+        @keyframes glassShine { 0% { left: -150%; } 20% { left: 150%; } 100% { left: 150%; } }
+
+        /* Main Tool Box */
         #main {
             width: 235px; height: 300px;
             background: linear-gradient(135deg, #001105, #007722, #001105, #00aa33); background-size: 300% 300%;
             animation: flowGreen 5s ease infinite, toolGlow 2s infinite ease-in-out;
             border: 2px solid #00ff2a; border-radius: 30px;
-            display: none; flex-direction: column; padding: 12px; position: relative; overflow: hidden;
+            display: none; flex-direction: column; padding: 12px; z-index: 50; position: absolute; top: 15%; left: 50%; transform: translateX(-50%); overflow: hidden; touch-action: none;
         }
-        @keyframes glassShine { 0% { left: -150%; } 20% { left: 150%; } 100% { left: 150%; } }
         .glass-reflection { position: absolute; top: 0; left: -150%; width: 150%; height: 100%; background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.3), rgba(0, 255, 42, 0.5), transparent); transform: skewX(-30deg); animation: glassShine 4s infinite; z-index: 1; pointer-events: none; border-radius: 30px; overflow: hidden; }
         .header-box, .status-bar, #box-content, #btn-content { z-index: 2; position: relative; }
         .header-box { width: 100%; background: linear-gradient(90deg, #001105, #00330f, #001105); border: 1.5px solid #00ff2a; border-radius: 20px; display: flex; align-items: center; justify-content: center; padding: 8px 0; margin-bottom: 10px; box-shadow: inset 0 0 15px rgba(0,255,42,0.3); }
@@ -79,133 +75,59 @@
         .m-col span { font-size: 9px; font-weight: 900; color: #57ff64; text-shadow: 0 0 5px #57ff64; margin-top: 1px; }
         .hud-bot { position: relative; display: flex; align-items: center; justify-content: center; width: 100%; color: #ffffff; font-family: 'Orbitron', sans-serif; font-size: 8px; letter-spacing: 2px; font-weight: 900; padding-top: 3px; }
         .bot-line { flex: 1; height: 1px; background: #4dc5a2; opacity: 0.5; margin: 0 8px; }
-        .bg-box-img { background: url('file:///android_res/drawable/box.png') no-repeat center center; background-size: 100% 100%; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px; margin: 0; position: absolute; top: 0; left: 0; border-radius: 16px; z-index: 5; box-sizing: border-box; }
+        
+        /* Updated Background Box image path */
+        .bg-box-img { background: url('box.png') no-repeat center center; background-size: 100% 100%; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px; margin: 0; position: absolute; top: 0; left: 0; border-radius: 16px; z-index: 5; box-sizing: border-box; }
         .msg-title { position: relative; z-index: 10; font-size: 15px; font-family: 'Montserrat', sans-serif; font-weight: 900; color: #ff3333; text-shadow: 0 0 10px #ff0000; margin-bottom: 6px; text-align: center; text-transform: uppercase; letter-spacing: 1px; }
         .msg-title.green { color: #00ff2a; text-shadow: 0 0 10px #00ff2a; }
         .msg-sub { position: relative; z-index: 10; font-size: 10px; font-family: 'Montserrat', sans-serif; font-weight: 800; color: #fff; text-align: center; letter-spacing: 1px; line-height: 1.5; text-transform: uppercase; }
         .msg-sub span { color: #00ff2a; font-weight: 900; text-shadow: 0 0 5px rgba(0,255,42,0.4); }
         #btn-content { display: flex; gap: 8px; width: 100%; height: 38px; margin-top: 10px; }
-        .btn { border-radius: 20px; font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 900; letter-spacing: 1px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.1s; color: #fff; }
+        .btn { border-radius: 20px; font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 900; letter-spacing: 1px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.1s; color: #fff; z-index: 60; position: relative;}
         .btn:active { transform: scale(0.95); }
         .btn-exe { flex: 1.3; background: linear-gradient(180deg, #00d020, #006010); border: 2px solid #00ff2a; box-shadow: inset 0 0 15px rgba(0,255,42,0.5); text-shadow: 1px 1px 2px rgba(0,0,0,0.8); }
         .btn-exe::before { content:'►'; font-size:8px; margin-right:4px; }
         .btn-cls { flex: 0.7; background: #000000; border: 1.5px solid rgba(0,255,42,0.3); box-shadow: inset 0 0 10px rgba(0,255,42,0.1); }
-        #mini { width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; position: relative; cursor: pointer; background: #001105; border: 2px solid #00ff2a; box-shadow: 0 0 15px rgba(0,255,42,0.6); z-index:20; overflow:hidden; }
+        
+        /* Floating Mini Logo */
+        #mini { width: 60px; height: 60px; border-radius: 50%; display: none; align-items: center; justify-content: center; position: absolute; top: 15%; left: 80%; cursor: pointer; background: #001105; border: 2px solid #00ff2a; box-shadow: 0 0 15px rgba(0,255,42,0.6); z-index:50; overflow:hidden; touch-action: none; }
         #mini img { width: 100%; height: 100%; object-fit: cover; z-index: 2; border-radius: 50%; opacity: 0.9; }
         #mini::after { content:''; position:absolute; width:100%; height:100%; border-radius:50%; box-shadow:inset 0 0 15px rgba(0,255,42,0.8); z-index:3; pointer-events:none; }
     </style>
 </head>
 <body>
 
-    <!-- 🚀 AUTHENTICATION LOGIN PAGE 🚀 -->
+    <!-- 🚀 LOGIN SCREEN 🚀 -->
     <div id="login-screen">
-        <div class="login-box">
-            <h2>SYSTEM LOGIN</h2>
-            <input type="password" id="pass-input" placeholder="ENTER PASSWORD">
-            <div class="btn btn-exe" onclick="checkAuth()" style="width: 100%; padding: 12px; margin-top: 10px; font-size: 12px;">AUTHORIZE</div>
-            <p id="error-msg" class="error-msg">ACCESS DENIED - INVALID KEY</p>
-        </div>
+        <div class="log-title">SYSTEM SECURED</div>
+        <input type="password" id="pass-input" placeholder="ENTER PASSWORD">
+        <button id="pass-btn" onclick="checkLogin()">AUTHENTICATE</button>
+        <div id="err-msg">INCORRECT PASSWORD</div>
     </div>
 
     <!-- 🚀 BACKGROUND WEBSITE 🚀 -->
-    <!-- Replace example.com with your target url manually -->
-    <iframe id="bg-iframe" src="https://example.com" sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
+    <iframe id="bg-iframe" src="https://www.veergame28.com/#/login"></iframe>
 
-    <!-- 🚀 DRAGGABLE CONTAINER FOR MINI LOGO & PANEL 🚀 -->
-    <div id="drag-container">
-        
-        <!-- MINI FLOATING LOGO -->
-        <div id='mini'>
-            <img src='file:///android_res/drawable/yaarlogo.png' onerror="this.onerror=null; this.src='file:///android_res/drawable/yadavlogo.jpg';">
+    <!-- 🚀 MINI FLOATING LOGO 🚀 -->
+    <div id='mini'>
+        <!-- Updated logo image path -->
+        <img src='logo.png' onerror="this.src='https://cdn-icons-png.flaticon.com/512/846/846296.png';">
+    </div>
+
+    <!-- 🚀 MAIN PANEL 🚀 -->
+    <div id='main'>
+        <div class='glass-reflection'></div>
+        <div class='header-box'><div class='h-text'>GOD X PANEL</div></div>
+        <div class='status-bar'>
+            <div class='s-pill'>SYS: <span>ARMED</span></div>
+            <div class='s-pill'>CORE: <span>SYNC</span></div>
+            <div class='s-pill'>PING: <span id='live-ping'>15MS</span></div>
         </div>
-
-        <!-- MAIN PANEL -->
-        <div id='main-wrapper' style='display:none;'>
-            <div id='main'>
-                <div class='glass-reflection'></div>
-                <div class='header-box'><div class='h-text'>GOD X PANEL</div></div>
-                <div class='status-bar'>
-                    <div class='s-pill'>SYS: <span>ARMED</span></div>
-                    <div class='s-pill'>CORE: <span>SYNC</span></div>
-                    <div class='s-pill'>PING: <span id='live-ping'>15MS</span></div>
-                </div>
-                <div id='box-content'></div>
-                <div id='btn-content'></div>
-            </div>
-        </div>
-
+        <div id='box-content'></div>
+        <div id='btn-content'></div>
     </div>
 
     <script>
-        /* ============================
-           1. AUTHENTICATION LOGIC
-        ============================ */
-        function checkAuth() {
-            var input = document.getElementById('pass-input').value;
-            if (input === 'DARK') {
-                document.getElementById('login-screen').style.display = 'none';
-                document.getElementById('drag-container').style.display = 'block';
-            } else {
-                document.getElementById('error-msg').style.display = 'block';
-            }
-        }
-
-        /* ============================
-           2. DRAG & DROP LOGIC (Smooth & No BG Scroll)
-        ============================ */
-        let isDragging = false;
-        let dragStartX, dragStartY;
-        let initialLeft, initialTop;
-        const dragContainer = document.getElementById('drag-container');
-
-        function onDragStart(e) {
-            // Cancel drag if touching buttons or inputs
-            if (e.target.closest('.btn') || e.target.tagName.toLowerCase() === 'input') return;
-            isDragging = true;
-            let clientX = e.touches ? e.touches[0].clientX : e.clientX;
-            let clientY = e.touches ? e.touches[0].clientY : e.clientY;
-            dragStartX = clientX;
-            dragStartY = clientY;
-            initialLeft = dragContainer.offsetLeft;
-            initialTop = dragContainer.offsetTop;
-        }
-
-        function onDragMove(e) {
-            if (!isDragging) return;
-            e.preventDefault(); // Prevents background website from scrolling
-            let clientX = e.touches ? e.touches[0].clientX : e.clientX;
-            let clientY = e.touches ? e.touches[0].clientY : e.clientY;
-            let dx = clientX - dragStartX;
-            let dy = clientY - dragStartY;
-            dragContainer.style.left = (initialLeft + dx) + 'px';
-            dragContainer.style.top = (initialTop + dy) + 'px';
-        }
-
-        function onDragEnd(e) {
-            if (!isDragging) return;
-            isDragging = false;
-            // Distinguish between a drag and a simple click/tap
-            let clientX = e.changedTouches ? e.changedTouches[0].clientX : e.clientX;
-            let clientY = e.changedTouches ? e.changedTouches[0].clientY : e.clientY;
-            if (Math.abs(clientX - dragStartX) < 5 && Math.abs(clientY - dragStartY) < 5) {
-                // If dragged less than 5px, it's a click. Open panel if mini logo was clicked.
-                if(e.target.closest('#mini')) {
-                    openM();
-                }
-            }
-        }
-
-        dragContainer.addEventListener('mousedown', onDragStart, {passive: false});
-        document.addEventListener('mousemove', onDragMove, {passive: false});
-        document.addEventListener('mouseup', onDragEnd);
-
-        dragContainer.addEventListener('touchstart', onDragStart, {passive: false});
-        document.addEventListener('touchmove', onDragMove, {passive: false});
-        document.addEventListener('touchend', onDragEnd);
-
-        /* ============================
-           3. PANEL & RESULT LOGIC
-        ============================ */
         var state = 'ready'; 
         var isScanning = false; 
         var currentResultSz = 'SMALL'; 
@@ -216,12 +138,27 @@
         var isOpen = false; 
 
         var closeBtnHtml = '<div class="btn btn-cls" onclick="closeM()">X CLOSE</div>';
-        var numImg = function(n) { return '<img src="file:///android_res/drawable/num_' + n + '.png" onerror="this.style.display=\'none\';">'; };
+        
+        // Updated numbers image path
+        var numImg = function(n) { return '<img src="num_' + n + '.png" onerror="this.style.display=\'none\';">'; };
 
         setInterval(function(){ 
             var pt = document.getElementById('live-ping'); 
             if(pt){ pt.innerText = (Math.floor(Math.random() * 20) + 12) + 'MS'; } 
         }, 1500);
+
+        // 🚀 LOGIN LOGIC 🚀
+        function checkLogin() {
+            var pass = document.getElementById('pass-input').value;
+            if (pass === "DARK") {
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('bg-iframe').style.display = 'block';
+                document.getElementById('mini').style.display = 'flex';
+                render();
+            } else {
+                document.getElementById('err-msg').style.display = 'block';
+            }
+        }
         
         function getP(){ 
             var d = new Date(); d.setSeconds(d.getSeconds() + 2); 
@@ -235,18 +172,18 @@
         function openM(){ 
             if(isOpen) return; 
             isOpen = true; 
-            document.getElementById('main-wrapper').style.display='flex'; 
             document.getElementById('main').style.display='flex'; 
             document.getElementById('mini').style.display='none'; 
-            if(typeof render === 'function') render(); 
+            render(); 
         }
 
         function closeM(){ 
             isOpen = false; 
-            document.getElementById('main-wrapper').style.display='none'; 
+            document.getElementById('main').style.display='none'; 
             document.getElementById('mini').style.display='flex'; 
         }
 
+        // 🚀 ACTION & RESULT LOGIC 🚀
         function actionClick() { 
             if(!isScanning) { 
                 var currentLivePeriod = getP(); 
@@ -312,11 +249,70 @@
             } 
         }
 
-        window.onload = function() { 
-            // Initally hides main tool, waiting for login
-            document.getElementById('main-wrapper').style.display='none'; 
-            document.getElementById('mini').style.display='flex'; 
-        };
+        // 🚀 DRAG LOGIC (Works on touch and mouse without scrolling the background) 🚀
+        function makeDraggable(el) {
+            var isDragging = false, startX, startY, initialX, initialY;
+            
+            el.addEventListener('touchstart', dragStart, {passive: false});
+            el.addEventListener('mousedown', dragStart);
+
+            function dragStart(e) {
+                if(e.target.closest('.btn')) return; // Allow button clicks
+                
+                isDragging = false;
+                if (e.type === 'touchstart') {
+                    startX = e.touches[0].clientX;
+                    startY = e.touches[0].clientY;
+                } else {
+                    startX = e.clientX;
+                    startY = e.clientY;
+                }
+                initialX = el.offsetLeft;
+                initialY = el.offsetTop;
+
+                document.addEventListener('touchmove', dragMove, {passive: false});
+                document.addEventListener('mousemove', dragMove);
+                document.addEventListener('touchend', dragEnd);
+                document.addEventListener('mouseup', dragEnd);
+            }
+
+            function dragMove(e) {
+                var currentX, currentY;
+                if (e.type === 'touchmove') {
+                    currentX = e.touches[0].clientX;
+                    currentY = e.touches[0].clientY;
+                } else {
+                    currentX = e.clientX;
+                    currentY = e.clientY;
+                }
+                
+                // If moved more than 5px, it's a drag
+                if (Math.abs(currentX - startX) > 5 || Math.abs(currentY - startY) > 5) {
+                    isDragging = true;
+                    e.preventDefault(); // Stop background scroll
+                    el.style.left = (initialX + (currentX - startX)) + 'px';
+                    el.style.top = (initialY + (currentY - startY)) + 'px';
+                    el.style.transform = 'none'; // Clear any default transform to prevent layout bugs
+                }
+            }
+
+            function dragEnd(e) {
+                document.removeEventListener('touchmove', dragMove);
+                document.removeEventListener('mousemove', dragMove);
+                document.removeEventListener('touchend', dragEnd);
+                document.removeEventListener('mouseup', dragEnd);
+                
+                // If it wasn't dragged and it's the mini logo, open the tool
+                if (!isDragging && el.id === 'mini') {
+                    openM();
+                }
+            }
+        }
+
+        // Apply Draggable to both Tool & Logo
+        makeDraggable(document.getElementById('mini'));
+        makeDraggable(document.getElementById('main'));
+
     </script>
 </body>
 </html>
